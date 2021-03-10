@@ -40,11 +40,11 @@ int main(int argc, char **argv) {
     //If some parameters are missing
     if(argc<=2){
         printf("Please check again. Some parameters are missing!!! \n");
-        exit(1);
+        return 1;
     }
     if(strcmp(argv[1], "-input")!=0 || (strcmp(argv[1], "-input")==0 && strcmp(argv[2], "-report")==0)){
         printf("Please check again. Some parameters are wrong!!! \n");
-        exit(1);
+        return 1;
     }
     
     FILE * fp;
