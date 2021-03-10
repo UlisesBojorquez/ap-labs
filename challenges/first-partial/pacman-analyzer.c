@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
+#include <stdbool.h>
+
  
 typedef struct {
     char fecha[50];
@@ -14,7 +16,7 @@ typedef struct {
 typedef struct{
     char packageName[50];
     char installedDate[20];
-    char lastUpdateDate[20];
+    char lastUpdateDate[50];
     int howManyUpdates;
     char removalDate[20];
 }PACKAGES;
@@ -90,6 +92,20 @@ int main(int argc, char **argv) {
         char * token;
         //Here we read and open the file
         fp = fopen(FILENAME, "r");
+
+
+        getline(&line, &len, fp);
+        char *s;
+        s = strchr (line, '+');
+        bool mode;
+        if (s != NULL){
+            mode=true;
+            
+        }else{
+            mode=false;
+        }
+
+
         while ((read = getline(&line, &len, fp)) != -1) {
             //printf("Retrieved line of length %zu:\n", read);
             //printf("%s\n", line);
@@ -117,70 +133,120 @@ int main(int argc, char **argv) {
             }
 
             if(containsWord(compareLine, generalInfo[2])==1 && containsWord(compareLine, generalInfo[4])==1){
-                
-                token=strtok(compareLine," ");
-                while(token !=NULL){
-                    //printf("%s \n", token);
-                    if(iUpgraded==0){
-                        char var[100];
-                        strcpy(var,token);
-                        char *halfDate=strcat(var, " ");
-                        strcpy(upgradedPackets[indexUpgraded].fecha, halfDate);
-                    }else if(iUpgraded==1){
-                        char *completeDate=strcat(upgradedPackets[indexUpgraded].fecha, token);
-                        strcpy(upgradedPackets[indexUpgraded].fecha, completeDate);
-                    }else if(iUpgraded==4){
-                        strcpy(upgradedPackets[indexUpgraded].package, token);
-                    }
-                    token=strtok(NULL," ");  
-                    iUpgraded++;
+                if(mode==0){
+                    token=strtok(compareLine," ");
+                    while(token !=NULL){
+                        //printf("%s \n", token);
+                        if(iUpgraded==0){
+                            char var[100];
+                            strcpy(var,token);
+                            char *halfDate=strcat(var, " ");
+                            strcpy(upgradedPackets[indexUpgraded].fecha, halfDate);
+                        }else if(iUpgraded==1){
+                            char *completeDate=strcat(upgradedPackets[indexUpgraded].fecha, token);
+                            strcpy(upgradedPackets[indexUpgraded].fecha, completeDate);
+                        }else if(iUpgraded==4){
+                            strcpy(upgradedPackets[indexUpgraded].package, token);
+                        }
+                        token=strtok(NULL," ");  
+                        iUpgraded++;
 
+                    }
+                    indexUpgraded++;
+                    iUpgraded=0;
+                }else{
+                    token=strtok(compareLine," ");
+                    while(token !=NULL){
+                        //printf("%s \n", token);
+                        if(iUpgraded==0){
+                            strcpy(upgradedPackets[indexUpgraded].fecha, token);
+                        }else if(iUpgraded==3){
+                            strcpy(upgradedPackets[indexUpgraded].package, token);
+                        }
+                        token=strtok(NULL," ");  
+                        iUpgraded++;
+
+                    }
+                    indexUpgraded++;
+                    iUpgraded=0;
                 }
-                indexUpgraded++;
-                iUpgraded=0;
+                
             }else if(containsWord(compareLine, generalInfo[1])==1 && containsWord(compareLine, generalInfo[4])==1){
-                
-                token=strtok(compareLine," ");
-                while(token !=NULL){
-                    //printf("%s \n", token);
-                    if(iRemoved==0){
-                        char var[100];
-                        strcpy(var,token);
-                        char *halfDate=strcat(var, " ");
-                        strcpy(removedPackets[indexRemoved].fecha, halfDate);
-                    }else if(iRemoved==1){
-                        char *completeDate=strcat(removedPackets[indexRemoved].fecha, token);
-                        strcpy(removedPackets[indexRemoved].fecha, completeDate);
-                    }else if(iRemoved==4){
-                        strcpy(removedPackets[indexRemoved].package, token);
-                    }
-                    token=strtok(NULL," ");  
-                    iRemoved++;
+                if(mode==0){
+                    token=strtok(compareLine," ");
+                    while(token !=NULL){
+                        //printf("%s \n", token);
+                        if(iRemoved==0){
+                            char var[100];
+                            strcpy(var,token);
+                            char *halfDate=strcat(var, " ");
+                            strcpy(removedPackets[indexRemoved].fecha, halfDate);
+                        }else if(iRemoved==1){
+                            char *completeDate=strcat(removedPackets[indexRemoved].fecha, token);
+                            strcpy(removedPackets[indexRemoved].fecha, completeDate);
+                        }else if(iRemoved==4){
+                            strcpy(removedPackets[indexRemoved].package, token);
+                        }
+                        token=strtok(NULL," ");  
+                        iRemoved++;
 
+                    }
+                    indexRemoved++;
+                    iRemoved=0;
+                }else{
+                    token=strtok(compareLine," ");
+                    while(token !=NULL){
+                        //printf("%s \n", token);
+                        if(iRemoved==0){
+                            strcpy(removedPackets[indexRemoved].fecha, token);
+                        }else if(iRemoved==3){
+                            strcpy(removedPackets[indexRemoved].package, token);
+                        }
+                        token=strtok(NULL," ");  
+                        iRemoved++;
+
+                    }
+                    indexRemoved++;
+                    iRemoved=0;
                 }
-                indexRemoved++;
-                iRemoved=0;
             }else if(containsWord(compareLine, generalInfo[0])==1 && containsWord(compareLine, generalInfo[4])==1 && containsWord(compareLine, generalInfo[6])!=1){                
-                token=strtok(compareLine," ");
-                while(token !=NULL){
-                    //printf("%s \n", token);
-                    if(iInstalled==0){
-                        char var[100];
-                        strcpy(var,token);
-                        char *halfDate=strcat(var, " ");
-                        strcpy(installedPackets[indexInstalled].fecha, halfDate);
-                    }else if(iInstalled==1){
-                        char *completeDate=strcat(installedPackets[indexInstalled].fecha, token);
-                        strcpy(installedPackets[indexInstalled].fecha, completeDate);
-                    }else if(iInstalled==4){
-                        strcpy(installedPackets[indexInstalled].package, token);
-                    }
-                    token=strtok(NULL," ");  
-                    iInstalled++;
+                if(mode==0){
+                    token=strtok(compareLine," ");
+                    while(token !=NULL){
+                        //printf("%s \n", token);
+                        if(iInstalled==0){
+                            char var[100];
+                            strcpy(var,token);
+                            char *halfDate=strcat(var, " ");
+                            strcpy(installedPackets[indexInstalled].fecha, halfDate);
+                        }else if(iInstalled==1){
+                            char *completeDate=strcat(installedPackets[indexInstalled].fecha, token);
+                            strcpy(installedPackets[indexInstalled].fecha, completeDate);
+                        }else if(iInstalled==4){
+                            strcpy(installedPackets[indexInstalled].package, token);
+                        }
+                        token=strtok(NULL," ");  
+                        iInstalled++;
 
+                    }
+                    indexInstalled++;
+                    iInstalled=0;
+                }else{
+                    token=strtok(compareLine," ");
+                    while(token !=NULL){
+                        //printf("%s \n", token);
+                        if(iInstalled==0){
+                            strcpy(installedPackets[indexInstalled].fecha, token);
+                        }else if(iInstalled==3){
+                            strcpy(installedPackets[indexInstalled].package, token);
+                        }
+                        token=strtok(NULL," ");  
+                        iInstalled++;
+
+                    }
+                    indexInstalled++;
+                    iInstalled=0;
                 }
-                indexInstalled++;
-                iInstalled=0;
             }
         }
         
@@ -188,7 +254,7 @@ int main(int argc, char **argv) {
         char * oldestPackage=installedPackets[indexInstalled-1].package;
         char * newestPackage=installedPackets[0].package;
 
-
+        
         int numberUpdates=0;
         char* notUpdated[1000];
         int iNotUpdated=0;
@@ -197,22 +263,24 @@ int main(int argc, char **argv) {
             
             strcpy(list_packages[index1].packageName,installedPackets[index1].package);
             strcpy(list_packages[index1].installedDate,installedPackets[index1].fecha);
+            strcpy(list_packages[index1].lastUpdateDate, "-");
+            
             
             for(int index2=0;index2<indexUpgraded;index2++){
                 if(strcmp(list_packages[index1].packageName,upgradedPackets[index2].package)==0){
                     char *lastUpdate;
                     lastUpdate=upgradedPackets[index2].fecha;
                     strcpy(list_packages[index1].lastUpdateDate, lastUpdate);
+                    
                     numberUpdates++;
                 }
             }
-
             list_packages[index1].howManyUpdates=numberUpdates;
             numberUpdates=0;
-            char empty[5]={'\0'};
-
+            //char empty[5]={'\0'};
+            char empty[5]={'-'};
             if(strcmp(list_packages[index1].lastUpdateDate,empty)==0){
-                strcpy(list_packages[index1].lastUpdateDate, "-");
+                //strcpy(list_packages[index1].lastUpdateDate, "-");
                 
                 //Packages with no Upgrades
                 notUpdated[iNotUpdated]=(char*)malloc(100);
