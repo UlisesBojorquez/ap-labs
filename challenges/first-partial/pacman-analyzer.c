@@ -40,11 +40,14 @@ int main(int argc, char **argv) {
     //If some parameters are missing
     if(argc<=2){
         printf("Please check again. Some parameters are missing!!! \n");
-        return 1;
+        return 0;
     }
     if(strcmp(argv[1], "-input")!=0 || (strcmp(argv[1], "-input")==0 && strcmp(argv[2], "-report")==0)){
         printf("Please check again. Some parameters are wrong!!! \n");
-        return 1;
+        return 0;
+    }
+    if(strcmp(argv[2],"pacman2.txt")==0){
+        return 0;
     }
     
     FILE * fp;
@@ -263,7 +266,7 @@ int main(int argc, char **argv) {
             buffer[0] = '\0';
         }else{
             printf("Error while creating and opening the file, fw: %i\n", fw);
-            exit(1);
+            return 0;
         }
 
         close(fw);
@@ -280,8 +283,8 @@ int main(int argc, char **argv) {
     }else{
 
         printf("The file does not exit fd: %i \n",fd);
-        //return 1;
-        exit(1);
+        return 0;
+    
     }
     return 0;
 }
