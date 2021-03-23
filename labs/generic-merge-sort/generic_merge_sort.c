@@ -84,11 +84,12 @@ int main(int argc, char **argv)
 {
 
     FILE *fo;
-    const char * FILENAME;
+    char *FILENAME;
     size_t len = 0;
     ssize_t read;
     char * line = NULL;
     int numeric=0;
+    char *outputName;
     if(argc<2){
         printf("Missing parameters.\n");
         return 0;
@@ -97,10 +98,12 @@ int main(int argc, char **argv)
         return 0;
     }else if(argc<4 && strcmp(argv[1],"-n")==0){
         FILENAME=argv[2];
+        outputName="sorted_numbers.txt";
         numeric=1;
         
     }else{
         FILENAME=argv[1];
+        outputName="sorted_strings.txt";
         numeric=0;
     }
 
@@ -151,13 +154,27 @@ int main(int argc, char **argv)
     }
 
     int arr_size = sizeof(array) / sizeof(array[0]);
-    printf("Given array is \n");
-    printArray(array, arr_size);
+    //printf("Given array is \n");
+    //printArray(array, arr_size);
         
     mergeSort(array, 0, arr_size - 1, (int (*)(void*,void*))(numeric==1 ? numcmp : stringcmp));
     
-    printf("\nSorted array is \n");
-    printArray(array, arr_size);
+    //printf("\nSorted array is \n");
+    //printArray(array, arr_size);
+    
+    FILE *outputFile;
+    outputFile=fopen(outputName, "w");
+    if(outputFile!=NULL){
+        
+        for(int i=0;i<100;i++){
+            fprintf(outputFile, "%s\n", array[i]);
+        }
+        printf("Results file can be found at ./%s\n", outputName);
+
+    }else{
+        printf("Error with the creation of the output\n");
+        return 0;
+    }
 
     return 0;
 }
